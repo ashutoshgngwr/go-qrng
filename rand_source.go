@@ -20,7 +20,7 @@ type Config struct {
 
 type sourceImpl struct {
 	cfg    *Config
-	client *api.Client
+	client api.Client
 	buffer []uint16
 	lock   sync.Mutex
 }
@@ -28,9 +28,15 @@ type sourceImpl struct {
 // NewSource returns a new thread-safe `rand.Source` implementation that queries
 // QRNG API to get true random data.
 func NewSource(cfg *Config) rand.Source64 {
+	return NewSourceWithClient(cfg, api.NewClient())
+}
+
+// NewSourceWithClient returns a new thread-safe `rand.Source` implementation
+// that queries QRNG API to get true random data using the provided API client.
+func NewSourceWithClient(cfg *Config, client api.Client) rand.Source64 {
 	return &sourceImpl{
 		cfg:    cfg,
-		client: api.New(),
+		client: client,
 		buffer: make([]uint16, 0),
 		lock:   sync.Mutex{},
 	}
