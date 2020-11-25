@@ -15,13 +15,12 @@ func TestClient_GetUints(t *testing.T) {
 		nums     uint
 		httpResp string
 		returns  []uint16
-		errors   bool
 	}{
-		{DataTypeUint16, 4, `{"type":"uint16","length":4,"data":[0,1,0,1],"success":true}`, []uint16{0, 1, 0, 1}, false},
-		{DataTypeUint16, 4, ``, nil, true},
-		{DataTypeUint16, 4, `{"success":false}`, nil, true},
-		{DataTypeUint16, MaxLength + 1, ``, nil, true},
-		{"unsupported", 4, ``, nil, true},
+		{DataTypeUint16, 4, `{"type":"uint16","length":4,"data":[0,1,0,1],"success":true}`, []uint16{0, 1, 0, 1}},
+		{DataTypeUint16, 4, ``, nil},
+		{DataTypeUint16, 4, `{"success":false}`, nil},
+		{DataTypeUint16, MaxLength + 1, ``, nil},
+		{"unsupported", 4, ``, nil},
 	}
 
 	for _, testCase := range testCases {
@@ -34,11 +33,11 @@ func TestClient_GetUints(t *testing.T) {
 		mockServer := httptest.NewServer(handler)
 		client := clientImpl{mockServer.Client(), mockServer.URL}
 		nums, err := client.GetUints(testCase.dataType, testCase.nums)
-		if testCase.errors && err == nil {
+		if testCase.returns == nil && err == nil {
 			t.Fatalf(assertionMsgFmt, err, "non-nil")
 		}
 
-		if !testCase.errors && err != nil {
+		if testCase.returns != nil && err != nil {
 			t.Fatalf(assertionMsgFmt, err, nil)
 		}
 

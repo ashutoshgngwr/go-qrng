@@ -3,8 +3,8 @@ package api
 import "fmt"
 
 // NewFakeClient returns a new `Client` instance with a fake implementation that
-// returns the `returns` array alongwith a nil error. If `returns` is nil, it
-// returns a nil array alongwith a non-nil error.
+// returns the `returns` slice alongwith a nil error. If `returns` slice is nil,
+// it returns a nil slice alongwith a non-nil error.
 func NewFakeClient(returns []uint16) Client {
 	return &fakeClientImpl{returns}
 }

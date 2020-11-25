@@ -20,11 +20,11 @@ const (
 	// single request.
 	MaxLength = 1024
 
-	// DataTypeUint8 declares the type literal for querying 8-bit uints from the
+	// DataTypeUint8 declares the `DataType` literal for querying 8-bit uints from the
 	// API endpoint.
 	DataTypeUint8 DataType = "uint8"
 
-	// DataTypeUint16 declares the type literal for querying 16-bit uints from
+	// DataTypeUint16 declares the `DataType` literal for querying 16-bit uints from
 	// the API endpoint.
 	DataTypeUint16 DataType = "uint16"
 )
@@ -33,15 +33,6 @@ const (
 // API Endpoint.
 type DataType string
 
-// QRNGResponse declares the JSON schema of the response returned by QRNG API
-// endpoint.
-type QRNGResponse struct {
-	Success bool
-	Type    DataType
-	Length  uint
-	Data    []uint16
-}
-
 // Client declares functions to interact with the QRNG API.
 type Client interface {
 	// GetUints queries `n` integers of requested data type `t` from the QRNG API.
@@ -49,15 +40,22 @@ type Client interface {
 	GetUints(t DataType, n uint) ([]uint16, error)
 }
 
-// clientImpl implements the `Client` interface.
+// NewClient returns a new instance of `Client`.
+func NewClient() Client {
+	return &clientImpl{http.DefaultClient, defaultBaseURL}
+}
+
 type clientImpl struct {
 	*http.Client
 	baseURL string
 }
 
-// NewClient returns a new instance of `Client`.
-func NewClient() Client {
-	return &clientImpl{http.DefaultClient, defaultBaseURL}
+// qrngResponse declares the JSON schema of the response returned by QRNG API.
+type qrngResponse struct {
+	Success bool
+	Type    DataType
+	Length  uint
+	Data    []uint16
 }
 
 func (c *clientImpl) GetUints(t DataType, n uint) ([]uint16, error) {
@@ -66,7 +64,7 @@ func (c *clientImpl) GetUints(t DataType, n uint) ([]uint16, error) {
 	}
 
 	if n > MaxLength { // since both have equal maxLen
-		return nil, fmt.Errorf("n should be < %d, given: %d", MaxLength, n)
+		return nil, fmt.Errorf("n should be <= %d, given: %d", MaxLength, n)
 	}
 
 	resp, err := c.Get(fmt.Sprintf(apiEndpointFmt, c.baseURL, t, n))
@@ -79,7 +77,7 @@ func (c *clientImpl) GetUints(t DataType, n uint) ([]uint16, error) {
 		return nil, fmt.Errorf("error while reading response body: %s", err)
 	}
 
-	qrngResp := QRNGResponse{}
+	qrngResp := qrngResponse{}
 	if err = json.Unmarshal(body, &qrngResp); err != nil {
 		return nil, fmt.Errorf("error while decoding JSON response: %s", err)
 	}

@@ -12,9 +12,11 @@ type Config struct {
 	// Panic if a remote request to get random data fails.
 	PanicOnError bool
 
-	// Query maximum amount of random data allowed from QRNG API in a single
-	// request. It will result in significant performance gain if generating
-	// random numbers very frequently.
+	// Enable querying maximum amount of random data allowed with a single
+	// remote API request. It should result in significant performance gain when
+	// generating random numbers very frequently since each remote request fills
+	// up a local buffer that can serve up to hundreds of future requests for
+	// generating random data.
 	EnableBuffer bool
 }
 
