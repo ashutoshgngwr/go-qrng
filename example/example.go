@@ -8,17 +8,17 @@ import (
 )
 
 func main() {
-	// create a new `rand.Source` instance with QRNG implementation.
-	s := qrng.NewSource(&qrng.Config{PanicOnError: true})
+	// Create a new `rand.Source` instance with QRNG implementation.
+	s := qrng.NewSource(&qrng.Config{PanicOnError: true, EnableBuffer: true})
 
-	// create a new `rand.Rand` instance
+	// Create a new `rand.Rand` instance
 	r := rand.New(s)
 
-	for i := 0; i < 10; i++ {
-		fmt.Println(r.Int())
-	}
-
-	for i := 0; i < 10; i++ {
-		fmt.Println(r.Float64())
+	// The following will trigger only two remote requests to the QRNG API since
+	// buffering is enabled. Buffer-enabled `Source` fetches max allowed data in
+	// a single request from the API and keeps serving future requests from the
+	// local buffer until it is exhausted.
+	for i := 0; i < 128; i++ {
+		fmt.Println(r.Int(), "\t", r.Uint32(), "\t", r.Float32(), "\t", r.Float64())
 	}
 }
