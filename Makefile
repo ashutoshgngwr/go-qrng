@@ -2,7 +2,7 @@ BUILD_PATH = ./build
 BIN_PATH = $(BUILD_PATH)/bin
 COVERAGE_PATH = $(BUILD_PATH)/coverage.out
 
-GOLANGCI_LINT_VERSION = v1.31.0
+GOLANGCI_LINT_VERSION = v1.33.0
 GOLANGCI_LINT_BIN = $(BIN_PATH)/golangci-lint
 GOLANGCI_LINT_INSTALL_URL = https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
 
